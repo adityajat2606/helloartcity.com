@@ -2,25 +2,25 @@ import type { TaskKey } from '@/lib/site-config'
 
 export const siteContent = {
   navbar: {
-    tagline: 'Independent reading platform',
+    tagline: 'Image and profile platform',
   },
   footer: {
-    tagline: 'Stories, resources, and discoverable posts',
+    tagline: 'Visual posts, creators, and discoverable profiles',
   },
   hero: {
-    badge: 'Latest stories and visuals',
-    title: ['A thoughtful home for', 'stories, visuals, and discovery.'],
+    badge: 'Creative showcase network',
+    title: ['Discover image-led stories with profiles that feel alive.'],
     description:
-      'Explore fresh articles, image-led posts, and discoverable content across the platform through a calmer and clearer browsing experience.',
+      'A visual-first destination for image collections, creator presence, and standout profile discovery.',
     primaryCta: {
-      label: 'Read latest stories',
-      href: '/articles',
-    },
-    secondaryCta: {
-      label: 'Explore visuals',
+      label: 'See featured images',
       href: '/images',
     },
-    searchPlaceholder: 'Search stories, visuals, listings, and more',
+    secondaryCta: {
+      label: 'Meet creators',
+      href: '/profile',
+    },
+    searchPlaceholder: 'Search images, creators, collections, and visual posts',
     focusLabel: 'Focus',
     featureCardBadge: 'latest cover rotation',
     featureCardTitle: 'Latest posts shape the visual identity of the homepage.',
