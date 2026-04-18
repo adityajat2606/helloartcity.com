@@ -11,6 +11,7 @@ import { BookmarkCollectionCard } from '@/components/sbm/bookmark-collection-car
 import { mockBookmarkCollections } from '@/data/mock-data'
 import type { BookmarkCollection } from '@/types'
 import { loadFromStorage, storageKeys } from '@/lib/local-storage'
+import { LIGHT_PAGE_SURFACE } from '@/lib/light-page-surface'
 
 export default function BookmarkCollectionsPage() {
   const [storedCollections, setStoredCollections] = useState<BookmarkCollection[]>([])
@@ -30,7 +31,7 @@ export default function BookmarkCollectionsPage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className={LIGHT_PAGE_SURFACE.shell}>
       <NavbarShell />
 
       <main>

@@ -13,6 +13,7 @@ import { ContentImage } from "@/components/shared/content-image";
 import { RichContent, formatRichHtml } from "@/components/shared/rich-content";
 import { SITE_CONFIG, type TaskKey } from "@/lib/site-config";
 import { getLocalPostBySlug } from "@/lib/local-posts";
+import { LIGHT_PAGE_SURFACE } from "@/lib/light-page-surface";
 
 type PostContent = {
   category?: string;
@@ -109,7 +110,7 @@ export default function LocalPostDetailPage() {
 
   if (!post || !taskConfig) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className={LIGHT_PAGE_SURFACE.shell}>
         <NavbarShell />
         <main className="mx-auto max-w-3xl px-4 py-20 text-center">
           <h1 className="text-2xl font-semibold text-foreground">Post not found</h1>
@@ -135,7 +136,7 @@ export default function LocalPostDetailPage() {
   const mapEmbedUrl = buildMapEmbedUrl(content.latitude, content.longitude, location);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className={LIGHT_PAGE_SURFACE.shell}>
       <NavbarShell />
       <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
         <Link

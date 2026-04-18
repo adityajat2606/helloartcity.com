@@ -37,6 +37,7 @@ import { NavbarShell } from "@/components/shared/navbar-shell"
 import { useAuth } from "@/lib/auth-context"
 import { useToast } from "@/components/ui/use-toast"
 import { loadFromStorage, saveToStorage, storageKeys } from "@/lib/local-storage"
+import { LIGHT_PAGE_SURFACE } from "@/lib/light-page-surface"
 import { CATEGORY_OPTIONS } from "@/lib/categories"
 import type { Article } from "@/types"
 
@@ -169,7 +170,7 @@ export default function NewArticlePage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className={LIGHT_PAGE_SURFACE.shell}>
       <NavbarShell />
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

@@ -19,6 +19,7 @@ import { getFactoryState } from "@/design/factory/get-factory-state";
 import { getProductKind } from "@/design/factory/get-product-kind";
 import { DirectoryTaskDetailPage } from "@/design/products/directory/task-detail-page";
 import { TASK_DETAIL_PAGE_OVERRIDE_ENABLED, TaskDetailPageOverride } from "@/overrides/task-detail-page";
+import { LIGHT_PAGE_GRADIENT, LIGHT_PAGE_SURFACE } from "@/lib/light-page-surface";
 
 type PostContent = {
   category?: string;
@@ -226,10 +227,11 @@ export async function TaskDetailPage({ task, slug }: { task: TaskKey; slug: stri
   const schemaPayload = articleSchema ? [articleSchema, breadcrumbSchema] : breadcrumbSchema;
   const { recipe } = getFactoryState();
   const productKind = getProductKind(recipe);
+  const isImageGallery = task === "image";
 
   if (productKind === "directory" && (task === "listing" || task === "classified" || task === "profile")) {
     return (
-      <div className="min-h-screen bg-[#f8fbff]">
+      <div className={LIGHT_PAGE_SURFACE.shell}>
         <NavbarShell />
         <DirectoryTaskDetailPage
           task={task}
@@ -248,7 +250,13 @@ export async function TaskDetailPage({ task, slug }: { task: TaskKey; slug: stri
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div
+      className={
+        isImageGallery
+          ? `min-h-screen ${LIGHT_PAGE_GRADIENT} text-foreground antialiased`
+          : LIGHT_PAGE_SURFACE.shell
+      }
+    >
       <NavbarShell />
       <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <SchemaJsonLd data={schemaPayload} />
@@ -310,28 +318,67 @@ export async function TaskDetailPage({ task, slug }: { task: TaskKey; slug: stri
 
             {!isArticle ? (
               <>
-                {!isBookmark ? (
-                  <div className={cn(isClassified ? "w-full" : "")}>
-                    <TaskImageCarousel images={images} />
+                {!isBookmark && isImageGallery ? (
+                  <div className="space-y-8">
+                    <section className="relative overflow-hidden rounded-[2rem] border border-border bg-gradient-to-br from-primary/[0.08] via-background to-muted/40 px-6 py-8 sm:px-10 sm:py-10">
+                      <div
+                        aria-hidden
+                        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,rgba(201,153,107,0.22),transparent)]"
+                      />
+                      <div className="relative flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                        <Badge
+                          variant="secondary"
+                          className="inline-flex items-center gap-1 border border-primary/20 bg-primary/10 text-primary"
+                        >
+                          <Tag className="h-3.5 w-3.5" />
+                          {category}
+                        </Badge>
+                        {location && (
+                          <span className="inline-flex items-center gap-1">
+                            <MapPin className="h-4 w-4" />
+                            {location}
+                          </span>
+                        )}
+                      </div>
+                      <h1 className="relative mt-5 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl md:text-5xl">
+                        {post.title}
+                      </h1>
+                      <p className="relative mt-3 max-w-2xl text-sm text-muted-foreground">
+                        Featured visual on {SITE_CONFIG.name}
+                      </p>
+                    </section>
+                    <div className="overflow-hidden rounded-[2rem] border border-border bg-card p-2 shadow-[0_28px_90px_rgba(15,23,42,0.14)]">
+                      <TaskImageCarousel images={images} />
+                    </div>
+                    <div className="rounded-[2rem] border border-border bg-card p-6 shadow-sm sm:p-10">
+                      <h2 className="text-lg font-semibold text-foreground">About this piece</h2>
+                      <RichContent html={descriptionHtml} className="mt-4 max-w-3xl leading-relaxed" />
+                    </div>
                   </div>
-                ) : null}
+                ) : !isBookmark ? (
+                  <>
+                    <div className={cn(isClassified ? "w-full" : "")}>
+                      <TaskImageCarousel images={images} />
+                    </div>
 
-                <div className={cn(isClassified ? "mx-auto w-full max-w-4xl" : "mt-6")}>
-                  <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-                    <Badge variant="secondary" className="inline-flex items-center gap-1">
-                      <Tag className="h-3.5 w-3.5" />
-                      {category}
-                    </Badge>
-                    {location && (
-                      <span className="inline-flex items-center gap-1">
-                        <MapPin className="h-4 w-4" />
-                        {location}
-                      </span>
-                    )}
-                  </div>
-                  <h1 className="mt-4 text-3xl font-semibold text-foreground">{post.title}</h1>
-                  <RichContent html={descriptionHtml} className="mt-3 max-w-3xl" />
-                </div>
+                    <div className={cn(isClassified ? "mx-auto w-full max-w-4xl" : "mt-6")}>
+                      <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                        <Badge variant="secondary" className="inline-flex items-center gap-1">
+                          <Tag className="h-3.5 w-3.5" />
+                          {category}
+                        </Badge>
+                        {location && (
+                          <span className="inline-flex items-center gap-1">
+                            <MapPin className="h-4 w-4" />
+                            {location}
+                          </span>
+                        )}
+                      </div>
+                      <h1 className="mt-4 text-3xl font-semibold text-foreground">{post.title}</h1>
+                      <RichContent html={descriptionHtml} className="mt-3 max-w-3xl" />
+                    </div>
+                  </>
+                ) : null}
               </>
             ) : null}
 
@@ -380,7 +427,13 @@ export async function TaskDetailPage({ task, slug }: { task: TaskKey; slug: stri
             ) : null}
 
             {content.highlights?.length && !isArticle ? (
-              <div className={cn("mt-8 rounded-2xl border border-border bg-card p-6", isClassified ? "mx-auto w-full max-w-4xl" : "")}>
+              <div
+                className={cn(
+                  "mt-8 rounded-2xl border border-border bg-card p-6",
+                  isClassified ? "mx-auto w-full max-w-4xl" : "",
+                  isImageGallery && "rounded-[2rem] border-primary/15 bg-gradient-to-br from-card to-muted/30"
+                )}
+              >
                 <h2 className="text-lg font-semibold text-foreground">Highlights</h2>
                 <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
                   {content.highlights.map((item) => (
@@ -480,7 +533,7 @@ export async function TaskDetailPage({ task, slug }: { task: TaskKey; slug: stri
             <>
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-xl font-semibold text-foreground">
-                More in {category}
+                {isImageGallery ? "More visual work" : `More in ${category}`}
               </h2>
               {taskConfig?.route && (
                 <Link

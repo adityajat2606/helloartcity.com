@@ -21,6 +21,7 @@ import { mockBookmarks } from '@/data/mock-data'
 import { useAuth } from '@/lib/auth-context'
 import { useToast } from '@/components/ui/use-toast'
 import { loadFromStorage, saveToStorage, storageKeys } from '@/lib/local-storage'
+import { LIGHT_PAGE_SURFACE } from '@/lib/light-page-surface'
 import type { Bookmark as BookmarkType } from '@/types'
 
 export default function SubmitBookmarkPage() {
@@ -110,7 +111,7 @@ export default function SubmitBookmarkPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className={LIGHT_PAGE_SURFACE.shell}>
       <NavbarShell />
 
       <main>
