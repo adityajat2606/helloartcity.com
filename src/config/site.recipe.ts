@@ -8,8 +8,15 @@ export const SITE_RECIPE: SiteRecipe = {
   footerTemplate: 'dense-footer',
   motionPack: 'studio-stagger',
   primaryTask: 'image',
-  enabledTasks: ['image', 'profile', 'article'],
-  taskTemplates: {'article': 'article-editorial', 'image': 'image-portfolio', 'profile': 'profile-creator'},
+  enabledTasks: ['image', 'profile', 'article', 'listing', 'classified', 'sbm'],
+  taskTemplates: {
+    image: 'image-portfolio',
+    profile: 'profile-creator',
+    article: 'article-editorial',
+    listing: 'listing-directory',
+    classified: 'classified-market',
+    sbm: 'sbm-library',
+  },
   manualOverrides: {
     navbar: false,
     footer: false,

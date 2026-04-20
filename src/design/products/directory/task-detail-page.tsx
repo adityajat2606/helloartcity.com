@@ -46,7 +46,7 @@ export function DirectoryTaskDetailPage({
   }
 
   return (
-    <div className="min-h-screen bg-[#f8fbff] text-slate-950">
+    <div className="text-slate-900">
       <SchemaJsonLd data={schemaPayload} />
       <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <Link href={taskRoute} className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-950">

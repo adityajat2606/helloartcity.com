@@ -14,6 +14,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { mockBookmarkCollections } from '@/data/mock-data'
 import type { BookmarkCollection } from '@/types'
 import { loadFromStorage, saveToStorage, storageKeys } from '@/lib/local-storage'
+import { LIGHT_PAGE_SURFACE } from '@/lib/light-page-surface'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useToast } from '@/components/ui/use-toast'
 
@@ -38,7 +39,7 @@ export default function BookmarkCollectionDetailPage() {
 
   if (!collection) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className={LIGHT_PAGE_SURFACE.shell}>
         <NavbarShell />
         <main className="mx-auto max-w-4xl px-4 py-20 sm:px-6 lg:px-8">
           <Card className="border-border bg-card">
@@ -57,7 +58,7 @@ export default function BookmarkCollectionDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className={LIGHT_PAGE_SURFACE.shell}>
       <NavbarShell />
 
       <main>

@@ -1,5 +1,17 @@
 import Link from 'next/link'
-import { ArrowRight, Building2, FileText, Image as ImageIcon, LayoutGrid, Tag, User } from 'lucide-react'
+import {
+  ArrowRight,
+  Building2,
+  Camera,
+  FileText,
+  Image as ImageIcon,
+  LayoutGrid,
+  Palette,
+  Sparkles,
+  Tag,
+  User,
+  Users,
+} from 'lucide-react'
 import { NavbarShell } from '@/components/shared/navbar-shell'
 import { Footer } from '@/components/shared/footer'
 import { TaskListClient } from '@/components/tasks/task-list-client'
@@ -9,6 +21,7 @@ import { SITE_CONFIG, getTaskConfig, type TaskKey } from '@/lib/site-config'
 import { CATEGORY_OPTIONS, normalizeCategory } from '@/lib/categories'
 import { taskIntroCopy } from '@/config/site.content'
 import { getFactoryState } from '@/design/factory/get-factory-state'
+import { LIGHT_PAGE_GRADIENT, LIGHT_PAGE_SURFACE } from '@/lib/light-page-surface'
 import { TASK_LIST_PAGE_OVERRIDE_ENABLED, TaskListPageOverride } from '@/overrides/task-list-page'
 
 const taskIcons: Record<TaskKey, any> = {
@@ -23,21 +36,6 @@ const taskIcons: Record<TaskKey, any> = {
   org: Building2,
   comment: FileText,
 }
-
-const variantShells = {
-  'listing-directory': 'bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.08),transparent_24%),linear-gradient(180deg,#f8fbff_0%,#ffffff_100%)]',
-  'listing-showcase': 'bg-[linear-gradient(180deg,#ffffff_0%,#f4f9ff_100%)]',
-  'article-editorial': 'bg-[radial-gradient(circle_at_top_left,rgba(251,191,36,0.08),transparent_20%),linear-gradient(180deg,#fff8ef_0%,#ffffff_100%)]',
-  'article-journal': 'bg-[linear-gradient(180deg,#fffdf9_0%,#f7f1ea_100%)]',
-  'image-masonry': 'bg-[linear-gradient(180deg,#09101d_0%,#111c2f_100%)] text-white',
-  'image-portfolio': 'bg-[linear-gradient(180deg,#07111f_0%,#13203a_100%)] text-white',
-  'profile-creator': 'bg-[linear-gradient(180deg,#0a1120_0%,#101c34_100%)] text-white',
-  'profile-business': 'bg-[linear-gradient(180deg,#f6fbff_0%,#ffffff_100%)]',
-  'classified-bulletin': 'bg-[linear-gradient(180deg,#edf3e4_0%,#ffffff_100%)]',
-  'classified-market': 'bg-[linear-gradient(180deg,#f4f6ef_0%,#ffffff_100%)]',
-  'sbm-curation': 'bg-[linear-gradient(180deg,#fff7ee_0%,#ffffff_100%)]',
-  'sbm-library': 'bg-[linear-gradient(180deg,#f7f8fc_0%,#ffffff_100%)]',
-} as const
 
 export async function TaskListPage({ task, category }: { task: TaskKey; category?: string }) {
   if (TASK_LIST_PAGE_OVERRIDE_ENABLED) {
@@ -57,33 +55,16 @@ export async function TaskListPage({ task, category }: { task: TaskKey; category
   }))
   const { recipe } = getFactoryState()
   const layoutKey = recipe.taskLayouts[task as keyof typeof recipe.taskLayouts] || `${task}-${task === 'listing' ? 'directory' : 'editorial'}`
-  const shellClass = variantShells[layoutKey as keyof typeof variantShells] || 'bg-background'
+  const shellClass = LIGHT_PAGE_GRADIENT
   const Icon = taskIcons[task] || LayoutGrid
 
-  const isDark = ['image-masonry', 'image-portfolio', 'profile-creator'].includes(layoutKey)
-  const ui = isDark
-    ? {
-        muted: 'text-slate-300',
-        panel: 'border border-white/10 bg-white/6',
-        soft: 'border border-white/10 bg-white/5',
-        input: 'border-white/10 bg-white/6 text-white',
-        button: 'bg-white text-slate-950 hover:bg-slate-200',
-      }
-    : layoutKey.startsWith('article') || layoutKey.startsWith('sbm')
-      ? {
-          muted: 'text-[#72594a]',
-          panel: 'border border-[#dbc6b6] bg-white/90',
-          soft: 'border border-[#dbc6b6] bg-[#fff8ef]',
-          input: 'border border-[#dbc6b6] bg-white text-[#2f1d16]',
-          button: 'bg-[#2f1d16] text-[#fff4e4] hover:bg-[#452920]',
-        }
-      : {
-          muted: 'text-slate-600',
-          panel: 'border border-slate-200 bg-white',
-          soft: 'border border-slate-200 bg-slate-50',
-          input: 'border border-slate-200 bg-white text-slate-950',
-          button: 'bg-slate-950 text-white hover:bg-slate-800',
-        }
+  const ui = {
+    muted: LIGHT_PAGE_SURFACE.muted,
+    panel: LIGHT_PAGE_SURFACE.panel,
+    soft: LIGHT_PAGE_SURFACE.panelSoft,
+    input: LIGHT_PAGE_SURFACE.input,
+    button: LIGHT_PAGE_SURFACE.action,
+  }
 
   return (
     <div className={`min-h-screen ${shellClass}`}>
@@ -169,33 +150,186 @@ export async function TaskListPage({ task, category }: { task: TaskKey; category
           </section>
         ) : null}
 
-        {layoutKey === 'image-masonry' || layoutKey === 'image-portfolio' ? (
-          <section className="mb-12 grid gap-6 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
-            <div>
-              <div className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] ${ui.soft}`}>
-                <Icon className="h-3.5 w-3.5" /> Visual feed
+        {task === 'image' ? (
+          <section className="mb-12 space-y-8">
+            <div className="relative overflow-hidden rounded-[2rem] border border-border bg-gradient-to-br from-primary/[0.08] via-background to-muted/40 shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_-10%,rgba(201,153,107,0.26),transparent)]"
+              />
+              <div className="relative grid gap-8 p-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:p-10">
+                <div>
+                  <div className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
+                    <Camera className="h-3.5 w-3.5" />
+                    Gallery &amp; visuals
+                  </div>
+                  <h1 className="mt-5 text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
+                    {taskConfig?.description || 'Visual work, curated for scan and delight.'}
+                  </h1>
+                  <p className={`mt-4 max-w-2xl text-sm leading-relaxed sm:text-base ${ui.muted}`}>
+                    Larger tiles, calmer typography, and cyan-accent actions—so photography, renders, and brand imagery read
+                    like a gallery, not a generic feed.
+                  </p>
+                  <div className="mt-6 flex flex-wrap gap-3">
+                    <Link
+                      href="/search"
+                      className={`inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold ${ui.button}`}
+                    >
+                      Search visuals
+                      <Sparkles className="h-4 w-4" />
+                    </Link>
+                    <Link href="/contact" className={`inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold ${ui.soft}`}>
+                      Collaborate
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </div>
+                  <div className="mt-8 grid gap-3 sm:grid-cols-3">
+                    {[
+                      { label: 'Color-safe', sub: 'Consistent borders & cards', icon: Palette },
+                      { label: 'Full-bleed hero', sub: 'Detail pages spotlight media', icon: ImageIcon },
+                      { label: 'Fast scan', sub: 'Metadata stays light', icon: Sparkles },
+                    ].map(({ label, sub, icon: G }) => (
+                      <div key={label} className={`rounded-2xl border border-border bg-card/90 p-4 shadow-sm`}>
+                        <G className="h-5 w-5 text-primary" />
+                        <p className="mt-2 text-sm font-semibold text-foreground">{label}</p>
+                        <p className={`mt-1 text-xs ${ui.muted}`}>{sub}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                  <div
+                    className={`flex min-h-[200px] flex-col justify-end rounded-[1.75rem] border border-border bg-gradient-to-br from-card to-muted/50 p-5 shadow-inner ${ui.panel}`}
+                  >
+                    <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">Featured</span>
+                    <p className="mt-2 text-lg font-semibold text-foreground">High-impact frames</p>
+                  </div>
+                  <div
+                    className={`flex min-h-[200px] flex-col justify-end rounded-[1.75rem] border border-dashed border-primary/25 bg-primary/[0.04] p-5 ${ui.soft}`}
+                  >
+                    <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-primary">Carousel</span>
+                    <p className="mt-2 text-lg font-semibold text-foreground">Swipe-ready sets</p>
+                  </div>
+                  <div
+                    className={`col-span-2 flex min-h-[120px] items-center justify-between rounded-[1.75rem] border border-border bg-card/95 px-6 py-4 shadow-sm`}
+                  >
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Filter by mood</p>
+                      <p className="text-sm font-medium text-foreground">Category tags keep sets organized.</p>
+                    </div>
+                    <ImageIcon className="h-10 w-10 text-primary/80" />
+                  </div>
+                </div>
               </div>
-              <h1 className="mt-5 text-5xl font-semibold tracking-[-0.05em]">{taskConfig?.description || 'Latest posts'}</h1>
-              <p className={`mt-5 max-w-2xl text-sm leading-8 ${ui.muted}`}>This surface leans into stronger imagery, larger modules, and more expressive spacing so visual content feels materially different from reading and directory pages.</p>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className={`min-h-[220px] rounded-[2rem] ${ui.panel}`} />
-              <div className={`min-h-[220px] rounded-[2rem] ${ui.soft}`} />
-              <div className={`col-span-2 min-h-[120px] rounded-[2rem] ${ui.panel}`} />
-            </div>
+            <form
+              className={`flex flex-col gap-4 rounded-[1.75rem] border border-border bg-card p-6 shadow-sm sm:flex-row sm:items-end sm:justify-between`}
+              action={taskConfig?.route || '/images'}
+            >
+              <div className="flex-1">
+                <label className={`text-xs font-semibold uppercase tracking-[0.18em] ${ui.muted}`}>Category</label>
+                <select
+                  name="category"
+                  defaultValue={normalizedCategory}
+                  className={`mt-2 h-11 w-full max-w-md rounded-xl px-3 text-sm ${ui.input}`}
+                >
+                  <option value="all">All categories</option>
+                  {CATEGORY_OPTIONS.map((item) => (
+                    <option key={item.slug} value={item.slug}>
+                      {item.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <button type="submit" className={`h-11 rounded-xl px-8 text-sm font-semibold ${ui.button}`}>
+                Apply filters
+              </button>
+            </form>
           </section>
         ) : null}
 
-        {layoutKey === 'profile-creator' || layoutKey === 'profile-business' ? (
-          <section className={`mb-12 rounded-[2.2rem] p-8 shadow-[0_24px_70px_rgba(15,23,42,0.1)] ${ui.panel}`}>
-            <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
-              <div className={`min-h-[240px] rounded-[2rem] ${ui.soft}`} />
-              <div>
-                <p className={`text-xs uppercase tracking-[0.3em] ${ui.muted}`}>{taskConfig?.label || task}</p>
-                <h1 className="mt-3 text-4xl font-semibold tracking-[-0.05em] text-foreground">Profiles with stronger identity, trust, and reputation cues.</h1>
-                <p className={`mt-5 max-w-2xl text-sm leading-8 ${ui.muted}`}>This layout prioritizes the person or business surface first, then lets the feed continue below without borrowing the same visual logic used by articles or listings.</p>
+        {task === 'profile' ? (
+          <section className="mb-12 space-y-8">
+            <div className="relative overflow-hidden rounded-[2rem] border border-border bg-gradient-to-br from-primary/[0.07] via-card to-muted/35 shadow-[0_28px_90px_rgba(15,23,42,0.09)]">
+              <div
+                aria-hidden
+                className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-primary/10 blur-3xl"
+              />
+              <div className="relative grid gap-10 p-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:p-12">
+                <div>
+                  <div className="inline-flex items-center gap-2 rounded-full border border-border bg-background/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground shadow-sm">
+                    <Users className="h-3.5 w-3.5 text-primary" />
+                    People &amp; brands
+                  </div>
+                  <h1 className="mt-5 text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
+                    {taskConfig?.description || 'Profiles that feel intentional—not borrowed from a directory template.'}
+                  </h1>
+                  <p className={`mt-4 max-w-2xl text-sm leading-relaxed sm:text-base ${ui.muted}`}>
+                    Avatars, bios, and outbound links sit on the same warm canvas as the home page: soft cards, clear type,
+                    and primary accents only where they earn attention.
+                  </p>
+                  <ul className="mt-8 space-y-3 text-sm">
+                    {[
+                      'Identity-first layout with room for logos and long-form bios',
+                      'Suggested stories keep readers in your ecosystem',
+                      'Detail pages mirror marketing polish—not admin chrome',
+                    ].map((line) => (
+                      <li key={line} className="flex gap-3">
+                        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+                        <span className={`${ui.muted}`}>{line}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="mt-8 flex flex-wrap gap-3">
+                    <Link href="/articles" className={`inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold ${ui.button}`}>
+                      Read stories
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                    <Link href="/search" className={`inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold ${ui.soft}`}>
+                      Search people
+                    </Link>
+                  </div>
+                </div>
+                <div className={`rounded-[1.75rem] border border-border bg-gradient-to-b from-background to-muted/40 p-6 shadow-inner`}>
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Surface checklist</p>
+                  <div className="mt-5 grid gap-4">
+                    {[
+                      { t: 'Clear headline & domain', d: 'Visitors know who they are meeting in seconds.' },
+                      { t: 'Structured bio', d: 'Rich text keeps long introductions readable.' },
+                      { t: 'Outbound CTA', d: 'Official sites open in a confident primary button.' },
+                    ].map((item) => (
+                      <div key={item.t} className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+                        <p className="font-semibold text-foreground">{item.t}</p>
+                        <p className={`mt-1 text-sm ${ui.muted}`}>{item.d}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
+            <form
+              className={`flex flex-col gap-4 rounded-[1.75rem] border border-border bg-card p-6 shadow-sm sm:flex-row sm:items-end sm:justify-between`}
+              action={taskConfig?.route || '/profile'}
+            >
+              <div className="flex-1">
+                <label className={`text-xs font-semibold uppercase tracking-[0.18em] ${ui.muted}`}>Focus</label>
+                <select
+                  name="category"
+                  defaultValue={normalizedCategory}
+                  className={`mt-2 h-11 w-full max-w-md rounded-xl px-3 text-sm ${ui.input}`}
+                >
+                  <option value="all">All categories</option>
+                  {CATEGORY_OPTIONS.map((item) => (
+                    <option key={item.slug} value={item.slug}>
+                      {item.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <button type="submit" className={`h-11 rounded-xl px-8 text-sm font-semibold ${ui.button}`}>
+                Refine profiles
+              </button>
+            </form>
           </section>
         ) : null}
 

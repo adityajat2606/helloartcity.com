@@ -2,75 +2,148 @@ import type { TaskKey } from '@/lib/site-config'
 
 export const siteContent = {
   navbar: {
-    tagline: 'Image and profile platform',
+    tagline: 'Visual library · images & profiles',
+    /** Shown prominently in the main nav; other tasks stay reachable via footer & “More”. */
+    emphasizeTaskKeys: ['image', 'profile'] as const satisfies readonly TaskKey[],
+    secondaryNavLinks: [
+      { label: 'About', href: '/about' },
+      { label: 'Contact', href: '/contact' },
+    ],
   },
   footer: {
-    tagline: 'Visual posts, creators, and discoverable profiles',
+    tagline: 'Image posts, portfolios, and discoverable profiles',
   },
   hero: {
-    badge: 'Creative showcase network',
-    title: ['Discover image-led stories with profiles that feel alive.'],
+    badge: 'Visual network',
+    title: [
+      'A gallery-first home for images and the people behind them.',
+      'Large tiles, calm metadata, and profile cards that feel intentional—not like a recycled feed.',
+    ],
     description:
-      'A visual-first destination for image collections, creator presence, and standout profile discovery.',
+      'Hello Art City highlights image-led posts and public profiles so browsing feels like moving through a curated studio wall.',
     primaryCta: {
-      label: 'See featured images',
+      label: 'Explore images',
       href: '/images',
     },
     secondaryCta: {
-      label: 'Meet creators',
+      label: 'Browse profiles',
       href: '/profile',
     },
-    searchPlaceholder: 'Search images, creators, collections, and visual posts',
+    searchPlaceholder: 'Search images, creators, and visual posts',
     focusLabel: 'Focus',
-    featureCardBadge: 'latest cover rotation',
-    featureCardTitle: 'Latest posts shape the visual identity of the homepage.',
+    featureCardBadge: 'Featured wall',
+    featureCardTitle: 'Imagery leads; profiles add context.',
     featureCardDescription:
-      'Recent images and stories stay at the center of the experience without changing any core platform behavior.',
+      'The homepage prioritizes visual posts and creator surfaces—same routes and feeds as the platform, with a gallery-native layout.',
   },
   home: {
     metadata: {
-      title: 'Stories, visuals, and discoverable content',
+      title: 'Hello Art City — images, galleries & profiles',
       description:
-        'Explore articles, images, listings, and curated posts through a cleaner reading-first experience.',
-      openGraphTitle: 'Stories, visuals, and discoverable content',
+        'Discover image-led posts and public profiles for artists, photographers, and visual storytellers.',
+      openGraphTitle: 'Hello Art City — images, galleries & profiles',
       openGraphDescription:
-        'Discover articles, visual posts, and connected content through a calmer reading-first experience.',
-      keywords: ['story platform', 'article site', 'visual content', 'content discovery'],
+        'Browse visual posts and creator profiles in a gallery-style experience.',
+      keywords: [
+        'image gallery',
+        'visual portfolio',
+        'creator profiles',
+        'photography',
+        'Hello Art City',
+        'art images',
+      ],
     },
-    introBadge: 'About the platform',
-    introTitle: 'Built for reading, browsing, and connecting different kinds of content.',
+    introBadge: 'Studio wall',
+    introTitle: 'Built for scanning images first—profiles sit right beside them.',
     introParagraphs: [
-      'This site brings together article-style reading, visual browsing, and structured discovery so visitors can move naturally between different content types.',
-      'Instead of separating stories, visuals, and supporting resources into disconnected surfaces, the platform keeps them connected in one place with consistent navigation and easier exploration.',
-      'Whether someone starts with a story, an image-led post, a listing, or a resource page, they can keep discovering related content without friction.',
+      'The hero grid foregrounds recent visuals; creator cards sit in their own lane so identity never competes with the frame.',
+      'When image posts are sparse, we still surface visuals from other lanes so the page never feels empty—without changing feed logic.',
+      'Other content types stay available via search, direct URLs, and the footer when you need them.',
     ],
-    sideBadge: 'At a glance',
+    sideBadge: 'Spotlight',
     sidePoints: [
-      'Reading-first homepage with stronger emphasis on stories and imagery.',
-      'Connected sections for articles, visuals, listings, and supporting resources.',
-      'Cleaner browsing rhythm designed to make exploration feel easier.',
-      'Lightweight interactions that keep the experience fast and readable.',
+      'Dark canvas with luminous tiles and soft glass panels.',
+      'Profile row tuned for faces, logos, and cover crops.',
+      'Hover lifts tuned for imagery, not text density.',
+      'Motion: staggered fades—aligned with the studio motion pack.',
     ],
     primaryLink: {
-      label: 'Browse articles',
-      href: '/articles',
+      label: 'Open images',
+      href: '/images',
     },
     secondaryLink: {
-      label: 'See visuals',
-      href: '/images',
+      label: 'View profiles',
+      href: '/profile',
+    },
+    supportStrip: [
+      { label: 'About Hello Art City', href: '/about', description: 'What we publish and who it’s for.' },
+      { label: 'Contact', href: '/contact', description: 'Collaborations, features, and support.' },
+      { label: 'Search', href: '/search', description: 'Find any post type across the platform.' },
+    ],
+    /** Rich homepage copy when the product is visual (images + profiles). */
+    visualHome: {
+      statStrip: [
+        { label: 'Focus', value: 'Images & profiles' },
+        { label: 'Layout', value: 'Gallery wall' },
+        { label: 'Reach', value: 'Full search' },
+      ],
+      searchBand: {
+        eyebrow: 'Search the collection',
+        placeholder: 'Try a creator name, medium, mood, or title…',
+        hint: 'Matches images, profiles, and every post type in the index—same search as the rest of the site.',
+      },
+      pillars: [
+        {
+          title: 'Frame-first layout',
+          body:
+            'The grid rewards photography and illustration: large tiles, gentle hierarchy, and titles that sit inside the image—not under a wall of chrome.',
+        },
+        {
+          title: 'Profiles with presence',
+          body:
+            'Creator cards use circular crops, readable names, and short lines of context so people feel discoverable beside the work.',
+        },
+        {
+          title: 'One wall, many doors',
+          body:
+            'Articles, listings, and other formats stay one click away via search and the footer. This page simply foregrounds what Hello Art City shows best.',
+        },
+      ],
+      richness: {
+        eyebrow: 'How we think about browsing',
+        title: 'A calmer room for visual work',
+        lead:
+          'We built Hello Art City for artists, photographers, and visual storytellers who want a browse that feels like a studio visit—not an endless feed.',
+        bullets: [
+          'Light theme with sky accents: readable in daylight and consistent with About and inner pages.',
+          'The masonry hero pulls from recent image posts, with editorial fallbacks when the feed is quiet.',
+          'The profile rail reads like a reception wall: faces first, story second.',
+        ],
+      },
+      quote: {
+        text:
+          'Good visual publishing is not “more posts”—it is respect for the frame, the caption, and the person behind the lens.',
+        attribution: 'Hello Art City',
+      },
+      spotlightBullets: [
+        'Light canvas with airy panels—aligned with the rest of the site shell.',
+        'Profile row tuned for faces, logos, and cover crops.',
+        'Motion and hover lift imagery instead of dense text stacks.',
+        'Same URLs and feeds as the platform; only the homepage hierarchy changes.',
+      ],
     },
   },
   cta: {
-    badge: 'Start exploring',
-    title: 'Explore articles, visuals, and resources through one connected experience.',
+    badge: 'Join the wall',
+    title: 'Save favorites, follow profiles, and upload when you’re ready.',
     description:
-      'Move between articles, image-led posts, listings, and resources through one clearer and more connected visual system.',
+      'Create an account to keep track of images and creators you care about—stored locally on this device after sign-in.',
     primaryCta: {
-      label: 'Get Started Free',
+      label: 'Create account',
       href: '/register',
     },
     secondaryCta: {
-      label: 'Contact Sales',
+      label: 'Contact',
       href: '/contact',
     },
   },
