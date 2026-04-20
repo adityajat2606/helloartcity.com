@@ -39,6 +39,7 @@ import { NavbarShell } from "@/components/shared/navbar-shell"
 import { useAuth } from "@/lib/auth-context"
 import { useToast } from "@/components/ui/use-toast"
 import { loadFromStorage, storageKeys } from "@/lib/local-storage"
+import { LIGHT_PAGE_SURFACE } from "@/lib/light-page-surface"
 import type { Article, Listing, ClassifiedAd } from "@/types"
 import {
   Area,
@@ -256,7 +257,7 @@ export default function DashboardPage() {
   )
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className={LIGHT_PAGE_SURFACE.shell}>
       <NavbarShell />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -387,12 +388,12 @@ export default function DashboardPage() {
                       <linearGradient id="colorViews" x1="0" y1="0" x2="0" y2="1">
                         <stop
                           offset="5%"
-                          stopColor="hsl(var(--primary))"
+                          stopColor="var(--primary)"
                           stopOpacity={0.3}
                         />
                         <stop
                           offset="95%"
-                          stopColor="hsl(var(--primary))"
+                          stopColor="var(--primary)"
                           stopOpacity={0}
                         />
                       </linearGradient>
@@ -401,24 +402,24 @@ export default function DashboardPage() {
                       dataKey="name"
                       axisLine={false}
                       tickLine={false}
-                      tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
+                      tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
                     />
                     <YAxis
                       axisLine={false}
                       tickLine={false}
-                      tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
+                      tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
                     />
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: "hsl(var(--card))",
-                        border: "1px solid hsl(var(--border))",
+                        backgroundColor: "var(--card)",
+                        border: "1px solid var(--border)",
                         borderRadius: "8px",
                       }}
                     />
                     <Area
                       type="monotone"
                       dataKey="views"
-                      stroke="hsl(var(--primary))"
+                      stroke="var(--primary)"
                       strokeWidth={2}
                       fillOpacity={1}
                       fill="url(#colorViews)"
@@ -673,19 +674,19 @@ export default function DashboardPage() {
                       dataKey="name"
                       axisLine={false}
                       tickLine={false}
-                      tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
+                      tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
                       width={80}
                     />
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: "hsl(var(--card))",
-                        border: "1px solid hsl(var(--border))",
+                        backgroundColor: "var(--card)",
+                        border: "1px solid var(--border)",
                         borderRadius: "8px",
                       }}
                     />
                     <Bar
                       dataKey="count"
-                      fill="hsl(var(--primary))"
+                      fill="var(--primary)"
                       radius={[0, 4, 4, 0]}
                     />
                   </BarChart>

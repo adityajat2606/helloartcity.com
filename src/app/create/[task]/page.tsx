@@ -15,6 +15,7 @@ import { useAuth } from "@/lib/auth-context";
 import { CATEGORY_OPTIONS } from "@/lib/categories";
 import { SITE_CONFIG, type TaskKey } from "@/lib/site-config";
 import { addLocalPost } from "@/lib/local-posts";
+import { LIGHT_PAGE_SURFACE } from "@/lib/light-page-surface";
 
 type Field = {
   key: string;
@@ -182,7 +183,7 @@ export default function CreateTaskPage() {
 
   if (!taskConfig || !formConfig) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className={LIGHT_PAGE_SURFACE.shell}>
         <NavbarShell />
         <main className="mx-auto max-w-3xl px-4 py-16 text-center">
           <h1 className="text-2xl font-semibold text-foreground">Task not available</h1>
@@ -271,7 +272,7 @@ export default function CreateTaskPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className={LIGHT_PAGE_SURFACE.shell}>
       <NavbarShell />
       <main className="mx-auto max-w-4xl px-4 py-12">
         <div className="mb-8 flex items-center gap-3">

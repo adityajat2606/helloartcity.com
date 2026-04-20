@@ -33,6 +33,7 @@ import { NavbarShell } from "@/components/shared/navbar-shell"
 import { useAuth } from "@/lib/auth-context"
 import { useToast } from "@/components/ui/use-toast"
 import { loadFromStorage, saveToStorage, storageKeys } from "@/lib/local-storage"
+import { LIGHT_PAGE_SURFACE } from "@/lib/light-page-surface"
 
 const settingsSections = [
   { id: "profile", label: "Profile", icon: User },
@@ -236,7 +237,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className={LIGHT_PAGE_SURFACE.shell}>
       <NavbarShell />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
