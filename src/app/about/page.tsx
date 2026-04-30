@@ -4,8 +4,6 @@ import { PageShell } from '@/components/shared/page-shell'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { mockTeamMembers } from '@/data/mock-data'
 import { SITE_CONFIG } from '@/lib/site-config'
 
 const highlights = [
@@ -148,35 +146,6 @@ export default function AboutPage() {
           </div>
         </div>
 
-        <div>
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold text-foreground sm:text-2xl">People behind the product</h2>
-            <p className="mt-1 text-sm text-muted-foreground">A snapshot of the team building the experience you see today.</p>
-          </div>
-          <div className="grid gap-6 md:grid-cols-3">
-            {mockTeamMembers.map((member) => (
-              <Card
-                key={member.id}
-                className="rounded-3xl border-border bg-card shadow-sm transition-transform hover:-translate-y-1"
-              >
-                <CardContent className="px-6 py-6">
-                  <div className="flex items-center gap-3">
-                    <Avatar className="h-12 w-12 border border-border">
-                      <AvatarImage src={member.avatar} alt={member.name} />
-                      <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="text-sm font-semibold text-foreground">{member.name}</p>
-                      <p className="text-xs text-muted-foreground">{member.role}</p>
-                    </div>
-                  </div>
-                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{member.bio}</p>
-                  <p className="mt-3 text-xs text-muted-foreground/90">{member.location}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
       </div>
     </PageShell>
   )
