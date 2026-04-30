@@ -1,15 +1,14 @@
 "use client";
 
-import Link from "next/link";
 import { useMemo } from "react";
-import { Image as ImageIcon, Search, User } from "lucide-react";
 import { TaskPostCard } from "@/components/shared/task-post-card";
-import { Button } from "@/components/ui/button";
 import { buildPostUrl } from "@/lib/task-data";
 import { normalizeCategory, isValidCategory } from "@/lib/categories";
 import type { TaskKey } from "@/lib/site-config";
 import type { SitePost } from "@/lib/site-connector";
 import { getLocalPostsForTask } from "@/lib/local-posts";
+import { SITE_CONFIG } from "@/lib/site-config";
+import { getSiteExperience } from "@/lib/site-experience";
 
 type Props = {
   task: TaskKey;
@@ -17,17 +16,59 @@ type Props = {
   category?: string;
 };
 
+function getLayoutClass(task: TaskKey, siteKey: ReturnType<typeof getSiteExperience>["key"]) {
+  if (siteKey === "tynewebdesign") {
+    return task === "image"
+      ? "columns-1 gap-5 sm:columns-2 xl:columns-3 [column-fill:_balance]"
+      : "grid gap-6 md:grid-cols-2 xl:grid-cols-3";
+  }
+
+  if (siteKey === "codepixelmedia") {
+    return "grid gap-4 sm:grid-cols-2 lg:grid-cols-3";
+  }
+
+  if (siteKey === "radianpark") {
+    return "grid gap-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]";
+  }
+
+  if (siteKey === "lashisking") {
+    return "grid gap-7 md:grid-cols-2 xl:grid-cols-3";
+  }
+
+  if (siteKey === "scoreminers") {
+    return "grid gap-5 md:grid-cols-2 xl:grid-cols-4";
+  }
+
+  if (siteKey === "linedesing") {
+    return "grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]";
+  }
+
+  if (siteKey === "helloartcity") {
+    return "columns-1 gap-6 md:columns-2 xl:columns-3 [column-fill:_balance]";
+  }
+
+  if (siteKey === "housesdecors") {
+    return "grid gap-8 md:grid-cols-2 xl:grid-cols-3";
+  }
+
+  if (siteKey === "aporiakennels") {
+    return "grid gap-6 lg:grid-cols-2";
+  }
+
+  return "grid gap-6 md:grid-cols-2 xl:grid-cols-3";
+}
+
 export function TaskListClient({ task, initialPosts, category }: Props) {
   const localPosts = getLocalPostsForTask(task);
+  const experience = getSiteExperience(SITE_CONFIG.baseUrl);
+  const useHelloArtCityGalleryLayout = task === "image" || task === "profile";
 
   const merged = useMemo(() => {
     const bySlug = new Set<string>();
     const combined: Array<SitePost & { localOnly?: boolean; task?: TaskKey }> = [];
 
     localPosts.forEach((post) => {
-      if (post.slug) {
-        bySlug.add(post.slug);
-      }
+      if (post.slug) bySlug.add(post.slug);
       combined.push(post);
     });
 
@@ -56,67 +97,69 @@ export function TaskListClient({ task, initialPosts, category }: Props) {
   }, [category, initialPosts, localPosts]);
 
   if (!merged.length) {
-    if (task === "image") {
-      return (
-        <div className="rounded-[2rem] border border-dashed border-border bg-gradient-to-br from-primary/[0.04] via-card to-muted/30 p-10 text-center shadow-inner sm:p-14">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-border bg-card shadow-sm">
-            <ImageIcon className="h-7 w-7 text-primary" />
-          </div>
-          <h3 className="mt-6 text-lg font-semibold text-foreground">No visual posts yet</h3>
-          <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-            When imagery lands in this lane, it will appear here in large, scannable cards—same warm shell as the rest of
-            the site.
-          </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Button asChild className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90">
-              <Link href="/search">Search the site</Link>
-            </Button>
-            <Button asChild variant="outline" className="rounded-full border-border">
-              <Link href="/contact">Pitch a feature</Link>
-            </Button>
-          </div>
-        </div>
-      );
-    }
-    if (task === "profile") {
-      return (
-        <div className="rounded-[2rem] border border-dashed border-border bg-gradient-to-br from-muted/40 via-card to-primary/[0.05] p-10 text-center shadow-inner sm:p-14">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-border bg-card shadow-sm">
-            <User className="h-7 w-7 text-primary" />
-          </div>
-          <h3 className="mt-6 text-lg font-semibold text-foreground">No public profiles yet</h3>
-          <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-            Profiles show logos, bios, and outbound links on a polished surface. Check back soon—or explore stories and
-            search in the meantime.
-          </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Button asChild className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90">
-              <Link href="/articles">Browse articles</Link>
-            </Button>
-            <Button asChild variant="outline" className="rounded-full border-border">
-              <Link href="/search">
-                <Search className="mr-2 h-4 w-4" />
-                Open search
-              </Link>
-            </Button>
-          </div>
-        </div>
-      );
-    }
     return (
-      <div className="rounded-2xl border border-dashed border-border p-10 text-center text-muted-foreground">
-        No posts yet for this section.
+      <div className={`rounded-[2rem] p-12 text-center ${experience.panelClass}`}>
+        <p className="text-base font-semibold text-foreground">Nothing here yet</p>
+        <p className={`mt-2 text-sm ${experience.mutedClass}`}>
+          New posts will appear in this collection as soon as they are published.
+        </p>
       </div>
     );
   }
 
+  const layoutClass = getLayoutClass(task, experience.key);
+
+  if (useHelloArtCityGalleryLayout) {
+    return (
+      <section className="space-y-8">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {[
+            task === "image" ? "Print-ready browsing" : "Identity-first presentation",
+            "Cleaner card spacing",
+            "Reference-style visual hierarchy",
+            "Faster scan across collections",
+          ].map((item, index) => (
+            <div
+              key={item}
+              className={`rounded-[1.6rem] border px-5 py-4 shadow-sm ${
+                index === 0
+                  ? "border-orange-200 bg-[linear-gradient(135deg,#fff7ed_0%,#ffffff_100%)] text-stone-950"
+                  : "border-stone-200 bg-white text-stone-700"
+              }`}
+            >
+              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-stone-500">Surface note</p>
+              <p className="mt-2 text-sm font-semibold">{item}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4 xl:auto-rows-fr">
+          {merged.map((post, index) => {
+            const localOnly = (post as any).localOnly;
+            const href = localOnly ? `/local/${task}/${post.slug}` : buildPostUrl(task, post.slug);
+            const wrapperClass =
+              index === 0
+                ? "md:col-span-2 xl:col-span-2 xl:row-span-2"
+                : index === 1 || index === 2
+                  ? "xl:col-span-1"
+                  : "";
+
+            return (
+              <div key={post.id} className={wrapperClass}>
+                <TaskPostCard post={post} href={href} taskKey={task} />
+              </div>
+            );
+          })}
+        </div>
+      </section>
+    );
+  }
+
   return (
-    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+    <div className={layoutClass}>
       {merged.map((post) => {
         const localOnly = (post as any).localOnly;
-        const href = localOnly
-          ? `/local/${task}/${post.slug}`
-          : buildPostUrl(task, post.slug);
+        const href = localOnly ? `/local/${task}/${post.slug}` : buildPostUrl(task, post.slug);
         return <TaskPostCard key={post.id} post={post} href={href} taskKey={task} />;
       })}
     </div>

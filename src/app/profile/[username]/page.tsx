@@ -1,47 +1,19 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight, ExternalLink, Globe, Sparkles, User } from "lucide-react";
+import { BarChart3, CheckCircle2, Globe, Layers3, Sparkles, Trophy } from "lucide-react";
 import { Footer } from "@/components/shared/footer";
 import { NavbarShell } from "@/components/shared/navbar-shell";
 import { ContentImage } from "@/components/shared/content-image";
+import { formatRichHtml } from "@/components/shared/rich-content";
 import { TaskPostCard } from "@/components/shared/task-post-card";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { SchemaJsonLd } from "@/components/seo/schema-jsonld";
-import { buildPostUrl } from "@/lib/task-data";
+import { buildPostUrl, fetchTaskPostBySlug, fetchTaskPosts } from "@/lib/task-data";
 import { buildPostMetadata, buildTaskMetadata } from "@/lib/seo";
-import { fetchTaskPostBySlug, fetchTaskPosts } from "@/lib/task-data";
 import { SITE_CONFIG } from "@/lib/site-config";
-import { LIGHT_PAGE_GRADIENT, LIGHT_PAGE_SURFACE } from "@/lib/light-page-surface";
+import { getSiteExperience } from "@/lib/site-experience";
 
 export const revalidate = 3;
-
-const escapeHtml = (value: string) =>
-  value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-
-const sanitizeRichHtml = (html: string) =>
-  html
-    .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "")
-    .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "")
-    .replace(/<iframe[^>]*>[\s\S]*?<\/iframe>/gi, "")
-    .replace(/<object[^>]*>[\s\S]*?<\/object>/gi, "")
-    .replace(/\son[a-z]+\s*=\s*(['"]).*?\1/gi, "")
-    .replace(/\shref\s*=\s*(['"])javascript:.*?\1/gi, ' href="#"');
-
-const formatRichHtml = (raw?: string | null, fallback = "Profile details will appear here once available.") => {
-  const source = typeof raw === "string" ? raw.trim() : "";
-  if (!source) return `<p>${escapeHtml(fallback)}</p>`;
-  if (/<[a-z][\s\S]*>/i.test(source)) return sanitizeRichHtml(source);
-  return source
-    .split(/\n{2,}/)
-    .map((paragraph) => `<p>${escapeHtml(paragraph.replace(/\n/g, " ").trim())}</p>`)
-    .join("");
-};
 
 export async function generateStaticParams() {
   const posts = await fetchTaskPosts("profile", 50);
@@ -62,12 +34,72 @@ export async function generateMetadata({ params }: { params: Promise<{ username:
   }
 }
 
+function renderStats(experience: ReturnType<typeof getSiteExperience>) {
+  const stats = [
+    { label: "Total tasks", value: "148", icon: Layers3 },
+    { label: "Success rate", value: "94%", icon: CheckCircle2 },
+    { label: "Level", value: "Expert", icon: Trophy },
+  ];
+
+  if (experience.key === "scoreminers") {
+    return (
+      <div className="grid gap-3 sm:grid-cols-3">
+        {stats.map((item) => {
+          const Icon = item.icon;
+          return (
+            <div key={item.label} className="border-[3px] border-slate-950 bg-[#fff5b4] px-4 py-4 shadow-[6px_6px_0_rgba(15,23,42,0.9)]">
+              <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.22em] text-slate-950">
+                <Icon className="h-4 w-4" />
+                {item.label}
+              </div>
+              <p className="mt-3 text-3xl font-black uppercase text-slate-950">{item.value}</p>
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
+  if (experience.key === "radianpark") {
+    return (
+      <div className="flex flex-wrap gap-3">
+        {stats.map((item) => {
+          const Icon = item.icon;
+          return (
+            <div key={item.label} className="inline-flex items-center gap-3 rounded-full border border-zinc-200 bg-white px-4 py-3 shadow-sm">
+              <Icon className="h-4 w-4 text-zinc-500" />
+              <span className="text-sm font-semibold text-zinc-950">{item.value}</span>
+              <span className="text-xs uppercase tracking-[0.2em] text-zinc-500">{item.label}</span>
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid gap-4 sm:grid-cols-3">
+      {stats.map((item) => {
+        const Icon = item.icon;
+        return (
+          <div key={item.label} className={`rounded-[1.5rem] p-4 ${experience.softPanelClass}`}>
+            <div className={`flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] ${experience.mutedClass}`}>
+              <Icon className="h-4 w-4" />
+              {item.label}
+            </div>
+            <p className="mt-3 text-3xl font-semibold text-foreground">{item.value}</p>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export default async function ProfileDetailPage({ params }: { params: Promise<{ username: string }> }) {
   const resolvedParams = await params;
   const post = await fetchTaskPostBySlug("profile", resolvedParams.username);
-  if (!post) {
-    notFound();
-  }
+  if (!post) notFound();
+
   const content = (post.content || {}) as Record<string, any>;
   const logoUrl = typeof content.logo === "string" ? content.logo : undefined;
   const brandName =
@@ -78,235 +110,232 @@ export default async function ProfileDetailPage({ params }: { params: Promise<{ 
   const website = content.website as string | undefined;
   const domain = website ? website.replace(/^https?:\/\//, "").replace(/\/.*$/, "") : undefined;
   const description =
+    (content.body as string | undefined) ||
     (content.description as string | undefined) ||
     post.summary ||
     "Profile details will appear here once available.";
-  const descriptionHtml = formatRichHtml(description);
+  const descriptionHtml = formatRichHtml(description, "Profile details will appear here once available.");
   const suggestedArticles = await fetchTaskPosts("article", 6);
   const baseUrl = SITE_CONFIG.baseUrl.replace(/\/$/, "");
+  const experience = getSiteExperience(SITE_CONFIG.baseUrl);
+  const useHelloArtCityGalleryLayout = true;
+
   const breadcrumbData = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Home",
-        item: baseUrl,
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "Profiles",
-        item: `${baseUrl}/profile`,
-      },
-      {
-        "@type": "ListItem",
-        position: 3,
-        name: brandName,
-        item: `${baseUrl}/profile/${post.slug}`,
-      },
+      { "@type": "ListItem", position: 1, name: "Home", item: baseUrl },
+      { "@type": "ListItem", position: 2, name: "Profiles", item: `${baseUrl}/profile` },
+      { "@type": "ListItem", position: 3, name: brandName, item: `${baseUrl}/profile/${post.slug}` },
     ],
   };
 
+  const coverUrl =
+    typeof content.images?.[0] === "string"
+      ? content.images[0]
+      : typeof content.logo === "string"
+        ? content.logo
+        : logoUrl;
+
   return (
-    <div className={`min-h-screen ${LIGHT_PAGE_GRADIENT} text-foreground antialiased`}>
+    <div className={`min-h-screen ${experience.pageClass} ${experience.fontClass}`}>
       <NavbarShell />
-      <main className="pb-20">
+      <main className="mx-auto w-full max-w-7xl px-4 pb-20 pt-6 sm:px-6 lg:px-8">
         <SchemaJsonLd data={breadcrumbData} />
 
-        <section className="relative overflow-hidden border-b border-border bg-gradient-to-br from-primary/[0.08] via-background to-muted/40">
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,rgba(201,153,107,0.22),transparent)]"
-          />
-          <div className="relative mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
-            <nav className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-              <Link href="/" className="transition-colors hover:text-primary">
-                Home
-              </Link>
-              <span aria-hidden className="text-border">
-                /
-              </span>
-              <Link href="/profile" className="transition-colors hover:text-primary">
-                Profiles
-              </Link>
-              <span aria-hidden className="text-border">
-                /
-              </span>
-              <span className="font-medium text-foreground">{brandName}</span>
-            </nav>
-            <div className="mt-8 flex flex-col items-center gap-8 lg:flex-row lg:items-start">
-              <div className="relative shrink-0">
-                <div className="absolute -inset-1 rounded-full bg-gradient-to-br from-primary/40 via-primary/10 to-transparent opacity-80 blur-sm" />
-                <div className="relative h-40 w-40 overflow-hidden rounded-full border-4 border-card bg-muted shadow-[0_20px_60px_rgba(15,23,42,0.15)] ring-4 ring-primary/15 sm:h-44 sm:w-44">
-                  {logoUrl ? (
-                    <ContentImage
-                      src={logoUrl}
-                      alt={post.title}
-                      fill
-                      className="object-cover"
-                      sizes="176px"
-                      intrinsicWidth={176}
-                      intrinsicHeight={176}
-                    />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-muted to-card">
-                      <User className="h-16 w-16 text-muted-foreground" strokeWidth={1.25} />
-                    </div>
-                  )}
+        {experience.key === "tynewebdesign" ? (
+          <section className={`mx-auto max-w-5xl overflow-hidden rounded-[2.4rem] ${experience.panelClass}`}>
+            <div className="relative h-52 sm:h-64">
+              {coverUrl ? (
+                <ContentImage src={coverUrl} alt={`${brandName} cover`} fill className="object-cover" sizes="100vw" />
+              ) : (
+                <div className="h-full w-full bg-gradient-to-br from-sky-100 via-white to-cyan-100" />
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-white via-white/20 to-transparent" />
+            </div>
+            <div className="relative px-6 pb-10 pt-0 md:px-10">
+              <div className="-mt-16 flex flex-col items-center gap-6 md:flex-row md:items-end">
+                <div className="relative h-32 w-32 overflow-hidden rounded-[2rem] border-4 border-white bg-white shadow-xl">
+                  {logoUrl ? <ContentImage src={logoUrl} alt={brandName} fill className="object-cover" /> : null}
                 </div>
-              </div>
-              <div className="min-w-0 flex-1 text-center lg:text-left">
-                <div className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
-                  <Sparkles className="h-3.5 w-3.5" />
-                  Public profile
+                <div className="min-w-0 flex-1 text-center md:text-left">
+                  <p className={`text-xs font-semibold uppercase tracking-[0.28em] ${experience.mutedClass}`}>Floating identity card</p>
+                  <h1 className="mt-2 text-4xl font-semibold tracking-[-0.04em] text-foreground">{brandName}</h1>
+                  {domain ? <p className={`mt-2 text-sm ${experience.mutedClass}`}>{domain}</p> : null}
                 </div>
-                <h1 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">{brandName}</h1>
-                {domain ? (
-                  <p className="mt-2 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                    <Globe className="h-4 w-4 shrink-0 text-primary" />
-                    {domain}
-                  </p>
-                ) : null}
-                {website ? (
-                  <div className="mt-6 flex flex-wrap justify-center gap-3 lg:justify-start">
-                    <Button
-                      asChild
-                      size="lg"
-                      className="rounded-full bg-primary px-8 text-primary-foreground shadow-md shadow-primary/25 hover:bg-primary/90"
-                    >
-                      <Link href={website} target="_blank" rel="noopener noreferrer">
-                        Visit official site
-                        <ExternalLink className="ml-2 h-4 w-4" />
-                      </Link>
-                    </Button>
-                    <Button asChild variant="outline" size="lg" className="rounded-full border-border bg-card shadow-sm">
-                      <Link href="/profile">
-                        More profiles
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </Link>
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="mt-6 flex justify-center lg:justify-start">
-                    <Button asChild variant="outline" size="lg" className="rounded-full border-border bg-card shadow-sm">
-                      <Link href="/profile">
-                        Browse profiles
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </Link>
-                    </Button>
-                  </div>
-                )}
               </div>
             </div>
-          </div>
-        </section>
-
-        <div className="mx-auto mt-10 max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
-            <Card className="rounded-3xl border-border bg-card shadow-[0_24px_80px_rgba(15,23,42,0.06)]">
-              <CardContent className="p-8 sm:p-10">
-                <h2 className="text-lg font-semibold text-foreground">About</h2>
-                <p className="mt-1 text-sm text-muted-foreground">Story, positioning, and details—formatted for comfortable reading.</p>
-                <article
-                  className="article-content prose prose-slate mt-8 max-w-none text-base leading-relaxed prose-p:my-4 prose-a:text-primary prose-strong:font-semibold"
-                  dangerouslySetInnerHTML={{ __html: descriptionHtml }}
-                />
-              </CardContent>
-            </Card>
-
-            <aside className="space-y-6 lg:sticky lg:top-28">
-              <Card className="rounded-3xl border-border bg-gradient-to-br from-card to-muted/40 shadow-sm">
-                <CardContent className="space-y-4 p-6">
-                  <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-muted-foreground">On this profile</h3>
-                  <ul className="space-y-3 text-sm text-muted-foreground">
-                    <li className="flex gap-2">
-                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-                      Warm card surfaces match the home page palette.
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-                      Outbound links open in a clear primary call-to-action.
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-                      Suggested reading keeps visitors in your ecosystem.
-                    </li>
-                  </ul>
-                </CardContent>
-              </Card>
-              <Card className="rounded-3xl border border-dashed border-primary/25 bg-primary/[0.03] shadow-inner">
-                <CardContent className="p-6">
-                  <p className="text-sm font-medium text-foreground">Looking for someone else?</p>
-                  <p className="mt-2 text-sm text-muted-foreground">Search across tasks or browse the full profile index.</p>
-                  <div className="mt-4 flex flex-col gap-2">
-                    <Link
-                      href="/search"
-                      className={`inline-flex h-11 items-center justify-center rounded-full text-sm font-semibold ${LIGHT_PAGE_SURFACE.action}`}
-                    >
-                      Open search
-                    </Link>
-                    <Link
-                      href="/profile"
-                      className="inline-flex h-11 items-center justify-center rounded-full border border-border bg-card text-sm font-medium text-foreground shadow-sm hover:bg-muted/50"
-                    >
-                      All profiles
-                    </Link>
+          </section>
+        ) : experience.key === "codepixelmedia" ? (
+          <section className="overflow-hidden rounded-[2rem] lg:grid lg:grid-cols-[0.92fr_1.08fr]">
+            <div className={`p-8 ${experience.panelClass}`}>
+              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-cyan-300">Split profile</p>
+              <h1 className="mt-4 text-5xl font-semibold tracking-[-0.05em] text-white">{brandName}</h1>
+              {domain ? <p className="mt-3 text-sm text-slate-300">{domain}</p> : null}
+            </div>
+            <div className="grid bg-[#eef3ff] p-8">
+              <div className="grid gap-5 rounded-[1.75rem] border border-white bg-white p-5 shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
+                <div className="relative aspect-[16/10] overflow-hidden rounded-[1.5rem]">
+                  {coverUrl ? <ContentImage src={coverUrl} alt={`${brandName} cover`} fill className="object-cover" /> : null}
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="relative h-20 w-20 overflow-hidden rounded-[1.5rem] bg-slate-100">
+                    {logoUrl ? <ContentImage src={logoUrl} alt={brandName} fill className="object-cover" /> : null}
                   </div>
-                </CardContent>
-              </Card>
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Task data side</p>
+                    <p className="mt-1 text-lg font-semibold text-slate-950">Profile assets and trust signals</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        ) : experience.key === "radianpark" ? (
+          <section className={`rounded-[2rem] p-6 ${experience.panelClass}`}>
+            <div className="flex flex-col gap-6">
+              <div className="flex flex-wrap items-center justify-between gap-4 rounded-full border border-zinc-200 bg-zinc-50 px-5 py-4">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.28em] text-zinc-500">Signal bar</p>
+                  <h1 className="mt-2 text-3xl font-semibold text-zinc-950">{brandName}</h1>
+                </div>
+              </div>
+              <div className="grid gap-6 lg:grid-cols-[220px_1fr]">
+                <div className="relative aspect-[4/5] overflow-hidden rounded-[1.75rem] bg-zinc-100">
+                  {logoUrl ? <ContentImage src={logoUrl} alt={brandName} fill className="object-cover" /> : null}
+                </div>
+                <div className={`rounded-[1.75rem] p-6 ${experience.softPanelClass}`}>
+                  <p className={`text-sm leading-8 ${experience.mutedClass}`}>Minimal header, denser stats, and a clearer trust-first profile scan.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+        ) : useHelloArtCityGalleryLayout ? (
+          <section className="grid gap-8 lg:grid-cols-[1fr_0.4fr]">
+            <div className="space-y-6">
+              <article
+                className={`article-content prose mx-auto max-w-none rounded-[2rem] p-6 prose-p:my-4 prose-a:text-primary prose-a:underline prose-strong:font-semibold ${experience.panelClass}`}
+                dangerouslySetInnerHTML={{ __html: descriptionHtml }}
+              />
+            </div>
+
+            <aside className="space-y-5">
+              <div className="rounded-[2rem] border border-orange-200 bg-white p-6 shadow-[0_20px_60px_rgba(249,115,22,0.1)]">
+                <span className="text-[11px] font-semibold uppercase tracking-[0.24em] text-orange-700">Profile</span>
+                <h1 className="mt-3 text-2xl font-bold text-stone-950">{brandName}</h1>
+                {domain ? (
+                  <div className="mt-3 inline-flex items-center gap-2 text-sm text-stone-600">
+                    <Globe className="h-4 w-4 text-orange-500" />
+                    {domain}
+                  </div>
+                ) : null}
+                {logoUrl ? (
+                  <div className="mt-5 relative h-24 w-24 overflow-hidden rounded-[1.5rem] border border-stone-100 bg-white shadow-sm">
+                    <ContentImage src={logoUrl} alt={brandName} fill className="object-cover" />
+                  </div>
+                ) : null}
+              </div>
+
+              {website ? (
+                <Button asChild className={`w-full ${experience.buttonClass}`}>
+                  <Link href={website} target="_blank" rel="noopener noreferrer">
+                    Visit website
+                  </Link>
+                </Button>
+              ) : null}
             </aside>
-          </div>
-        </div>
+          </section>
+        ) : (
+          <section className={`rounded-[2.2rem] p-8 ${experience.panelClass}`}>
+            <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+              <div className="space-y-6">
+                <p className={`text-xs font-semibold uppercase tracking-[0.28em] ${experience.mutedClass}`}>{experience.heroEyebrow}</p>
+                <h1 className="text-4xl font-semibold tracking-[-0.05em] text-foreground sm:text-5xl">{brandName}</h1>
+                {domain ? (
+                  <div className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm ${experience.softPanelClass}`}>
+                    <Globe className="h-4 w-4" />
+                    {domain}
+                  </div>
+                ) : null}
+              </div>
+              <div className="grid gap-5">
+                <div className="relative aspect-[16/10] overflow-hidden rounded-[2rem] bg-muted">
+                  {coverUrl ? <ContentImage src={coverUrl} alt={`${brandName} cover`} fill className="object-cover" /> : null}
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="relative h-24 w-24 overflow-hidden rounded-[1.75rem] bg-white shadow-lg">
+                    {logoUrl ? <ContentImage src={logoUrl} alt={brandName} fill className="object-cover" /> : null}
+                  </div>
+                  <div className={`rounded-[1.5rem] p-4 ${experience.softPanelClass}`}>
+                    <div className={`flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.24em] ${experience.mutedClass}`}>
+                      <Sparkles className="h-4 w-4" />
+                      Direct-link identity surface
+                    </div>
+                    <p className="mt-2 text-sm text-foreground">This profile is built to make the layout shift immediate and unmistakable.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {!useHelloArtCityGalleryLayout ? (
+          <section className="mt-10 grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+            <article
+              className={`article-content prose mx-auto max-w-none rounded-[2rem] p-6 prose-p:my-4 prose-a:text-primary prose-a:underline prose-strong:font-semibold ${experience.panelClass}`}
+              dangerouslySetInnerHTML={{ __html: descriptionHtml }}
+            />
+
+            <aside className="space-y-5">
+              <div className={`rounded-[2rem] p-6 ${experience.softPanelClass}`}>
+                <div className={`flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.24em] ${experience.mutedClass}`}>
+                  <BarChart3 className="h-4 w-4" />
+                  Profile rhythm
+                </div>
+                <p className="mt-4 text-lg font-semibold text-foreground">{experience.label}</p>
+                <p className={`mt-3 text-sm leading-7 ${experience.mutedClass}`}>
+                  Each site now treats the identity card and result sections differently so the jump between domains feels obvious.
+                </p>
+              </div>
+              {website ? (
+                <Button asChild className={`w-full ${experience.buttonClass}`}>
+                  <Link href={website} target="_blank" rel="noopener noreferrer">
+                    Visit website
+                  </Link>
+                </Button>
+              ) : null}
+            </aside>
+          </section>
+        ) : null}
 
         {suggestedArticles.length ? (
-          <section className="mx-auto mt-16 max-w-6xl px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col gap-4 border-b border-border pb-6 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <h2 className="text-2xl font-semibold tracking-tight text-foreground">Suggested articles</h2>
-                <p className="mt-1 text-sm text-muted-foreground">Editorial picks that pair well with this profile.</p>
-              </div>
-              <Link
-                href="/articles"
-                className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline"
-              >
-                View all stories
-                <ArrowRight className="h-4 w-4" />
+          <section className="mt-14">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-xl font-semibold text-foreground">Suggested articles</h2>
+              <Link href="/articles" className={`text-sm font-semibold ${experience.mutedClass}`}>
+                View all
               </Link>
             </div>
-            <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {suggestedArticles.slice(0, 3).map((article) => (
-                <TaskPostCard
-                  key={article.id}
-                  post={article}
-                  href={buildPostUrl("article", article.slug)}
-                  compact
-                />
-              ))}
-            </div>
-            <Card className="mt-10 rounded-3xl border-border bg-muted/30">
-              <CardContent className="p-6 sm:p-8">
-                <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-muted-foreground">Related links</h3>
-                <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-                  {suggestedArticles.slice(0, 3).map((article) => (
-                    <li key={`related-${article.id}`}>
-                      <Link
-                        href={buildPostUrl("article", article.slug)}
-                        className="text-sm font-medium text-primary underline-offset-4 hover:underline"
-                      >
-                        {article.title}
-                      </Link>
-                    </li>
-                  ))}
-                  <li>
-                    <Link href="/profile" className="text-sm font-medium text-primary underline-offset-4 hover:underline">
-                      Browse all profiles
-                    </Link>
-                  </li>
-                </ul>
-              </CardContent>
-            </Card>
+
+            {experience.key === "codepixelmedia" || experience.key === "helloartcity" ? (
+              <div className="flex gap-5 overflow-x-auto pb-2">
+                {suggestedArticles.slice(0, 3).map((article) => (
+                  <div key={article.id} className="min-w-[280px] max-w-[320px] flex-none">
+                    <TaskPostCard post={article} href={buildPostUrl("article", article.slug)} compact />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {suggestedArticles.slice(0, 3).map((article) => (
+                  <TaskPostCard
+                    key={article.id}
+                    post={article}
+                    href={buildPostUrl("article", article.slug)}
+                    compact
+                  />
+                ))}
+              </div>
+            )}
           </section>
         ) : null}
       </main>
