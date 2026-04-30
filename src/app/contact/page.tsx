@@ -14,6 +14,8 @@ export default function ContactPage() {
 
   const { recipe } = getFactoryState()
   const productKind = getProductKind(recipe)
+  const contactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL?.trim() || 'hello@helloartcity.com'
+  const mailtoHref = `mailto:${contactEmail}`
   const tone = {
     shell: `${LIGHT_PAGE_GRADIENT} min-h-screen antialiased`,
     panel: LIGHT_PAGE_SURFACE.card,
@@ -112,6 +114,17 @@ export default function ContactPage() {
               Tell us what you are trying to publish, fix, or launch. We will steer your note to the right lane with the same
               warm layout and primary accent as the home page.
             </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <a
+                href={mailtoHref}
+                className={`inline-flex h-11 items-center justify-center rounded-full px-5 text-sm font-semibold ${tone.action}`}
+              >
+                Email us directly
+              </a>
+              <span className="inline-flex h-11 items-center rounded-full border border-border bg-white/85 px-5 text-sm text-foreground shadow-sm">
+                {contactEmail}
+              </span>
+            </div>
             <div className="mt-8 grid gap-4 sm:grid-cols-3">
               {['Fast first response', 'Clear next steps', 'Product-aware routing'].map((label) => (
                 <div
@@ -142,6 +155,13 @@ export default function ContactPage() {
               <p className={`mt-2 text-sm ${tone.muted}`}>
                 Add enough context for us to reply with a concrete next step—links, screenshots, and timelines help.
               </p>
+              <div className={`mt-4 rounded-2xl border border-border px-4 py-3 text-sm ${tone.soft}`}>
+                Prefer email? Write to{' '}
+                <a href={mailtoHref} className="font-semibold text-foreground underline-offset-4 hover:underline">
+                  {contactEmail}
+                </a>
+                .
+              </div>
               <form className="mt-6 grid gap-4">
                 <input className={`h-12 rounded-xl px-4 text-sm ${LIGHT_PAGE_SURFACE.input}`} placeholder="Your name" />
                 <input className={`h-12 rounded-xl px-4 text-sm ${LIGHT_PAGE_SURFACE.input}`} placeholder="Email address" />
