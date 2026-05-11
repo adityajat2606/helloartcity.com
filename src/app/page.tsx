@@ -488,9 +488,6 @@ function VisualHome({ primaryTask, imagePosts, profilePosts, articlePosts }: { p
                   {siteContent.hero.primaryCta.label}
                   <ArrowRight className="h-4 w-4" />
                 </Link>
-                <Link href="/profile" className={`inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition-colors ${tone.actionAlt}`}>
-                  {siteContent.hero.secondaryCta.label}
-                </Link>
               </div>
 
               <dl className="mt-10 grid gap-3 sm:grid-cols-3">
@@ -575,46 +572,6 @@ function VisualHome({ primaryTask, imagePosts, profilePosts, articlePosts }: { p
         </div>
       </section>
 
-      <section className="border-t border-slate-200/80 bg-white/60">
-        <div className="mx-auto max-w-[1440px] px-4 py-14 sm:px-6 lg:px-8">
-          <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-sky-800">Profiles</p>
-              <h2 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-slate-900 sm:text-3xl">Creators on the wall</h2>
-              <p className={`mt-2 max-w-xl text-sm leading-relaxed ${tone.muted}`}>
-                Portraits, logos, and cover crops get room to breathe—tap through to full profile pages.
-              </p>
-            </div>
-            <Link href="/profile" className="text-sm font-semibold text-sky-700 hover:text-sky-800">
-              View all profiles →
-            </Link>
-          </div>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {creators.length
-              ? creators.map((post) => (
-                  <Link
-                    key={post.id}
-                    href={`/profile/${post.slug}`}
-                    className="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-sky-200 hover:shadow-md"
-                  >
-                    <div className="relative mx-auto h-36 w-36 overflow-hidden rounded-full border border-slate-200 shadow-inner">
-                      <ContentImage src={getPostImage(post)} alt={post.title} fill className="object-cover transition duration-300 group-hover:scale-105" />
-                    </div>
-                    <h3 className="mt-4 text-center text-lg font-semibold text-slate-900">{post.title}</h3>
-                    <p className={`mt-2 text-center text-sm leading-relaxed ${tone.muted}`}>{post.summary || 'Public profile & visual identity.'}</p>
-                  </Link>
-                ))
-              : Array.from({ length: 4 }).map((_, i) => (
-                  <div
-                    key={`cp-${i}`}
-                    className="flex min-h-[220px] flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-slate-50/80 px-4 text-center text-xs text-slate-500"
-                  >
-                    Profile cards appear when posts exist
-                  </div>
-                ))}
-          </div>
-        </div>
-      </section>
 
       <section className="mx-auto max-w-[1440px] px-4 py-14 sm:px-6 lg:px-8">
         <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">

@@ -84,10 +84,10 @@ export function Navbar() {
   const navigation = useMemo(() => {
     return SITE_CONFIG.tasks.filter((task) => {
       if (!task.enabled) return false
-      if (task.key === 'profile' && !emphasis.has('profile')) return false
+      if (task.key === 'profile') return false
       return true
     })
-  }, [emphasis])
+  }, [])
   const primaryNavigation = useMemo(() => {
     const emphasized = navigation.filter((t) => emphasis.has(t.key))
     return emphasized.length ? emphasized : navigation.slice(0, 1)
@@ -258,15 +258,6 @@ export function Navbar() {
             )}
           >
             <ImageIcon className="h-5 w-5" />
-          </Link>
-          <Link
-            href="/profile"
-            className={cn(
-              'rounded-lg p-2.5 text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary',
-              pathname.startsWith('/profile') && 'bg-primary/15 text-primary'
-            )}
-          >
-            <User className="h-5 w-5" />
           </Link>
           <Link
             href="/search"

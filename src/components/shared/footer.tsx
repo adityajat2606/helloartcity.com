@@ -36,11 +36,9 @@ const taskIcons: Record<TaskKey, any> = {
 const footerLinks = {
   company: [
     { name: 'About', href: '/about' },
-    { name: 'Team', href: '/team' },
-    { name: 'Careers', href: '/careers' },
-    { name: 'Blog', href: '/blog' },
+
     { name: 'Contact', href: '/contact' },
-    { name: 'Press', href: '/press' },
+
   ],
   resources: [
     { name: 'Help Center', href: '/help' },
@@ -94,7 +92,7 @@ export function Footer() {
   }
 
   const { recipe } = getFactoryState()
-  const enabledTasks = SITE_CONFIG.tasks.filter((task) => task.enabled)
+  const enabledTasks = SITE_CONFIG.tasks.filter((task) => task.enabled && task.key !== 'profile')
   const primaryTask = enabledTasks.find((task) => task.key === recipe.primaryTask) || enabledTasks[0]
   const navEmphasis = new Set<TaskKey>(Array.from(siteContent.navbar.emphasizeTaskKeys as readonly TaskKey[]))
   const emphasizedFooterTasks = enabledTasks.filter((task) => navEmphasis.has(task.key))
@@ -212,27 +210,6 @@ export function Footer() {
               </li>
             ))}
           </LinkColumn>
-          <div>
-            <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Connect</h3>
-            <div className="mt-4 flex flex-wrap gap-2">
-              {socialLinks.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="rounded-full border border-border bg-card p-2.5 text-muted-foreground shadow-sm transition-colors hover:border-primary/40 hover:text-primary"
-                  aria-label={item.name}
-                >
-                  <item.icon className="h-4 w-4" />
-                </Link>
-              ))}
-            </div>
-            <Link href="/contact" className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline">
-              <Mail className="h-4 w-4" />
-              Message us
-            </Link>
-          </div>
         </div>
         <div className="border-t border-border py-6 text-center text-xs text-muted-foreground">
           © {new Date().getFullYear()} {SITE_CONFIG.name}. All rights reserved.
@@ -398,32 +375,15 @@ export function Footer() {
                 </li>
               ))}
             </LinkColumn>
-            <div>
-              <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Legal & social</h3>
-              <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
-                {footerLinks.legal.map((item) => (
-                  <li key={item.name}>
-                    <Link href={item.href} className="hover:text-foreground">
-                      {item.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-              <div className="mt-6 flex gap-2">
-                {socialLinks.map((item) => (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="rounded-full border border-border bg-card p-2.5 text-muted-foreground shadow-sm transition-colors hover:border-primary/40 hover:text-primary"
-                    aria-label={item.name}
-                  >
-                    <item.icon className="h-4 w-4" />
+            <LinkColumn title="Legal">
+              {footerLinks.legal.map((item) => (
+                <li key={item.name}>
+                  <Link href={item.href} className="text-muted-foreground transition-colors hover:text-foreground">
+                    {item.name}
                   </Link>
-                ))}
-              </div>
-            </div>
+                </li>
+              ))}
+            </LinkColumn>
           </div>
         </div>
 

@@ -2,7 +2,7 @@ import type { TaskKey } from '@/lib/site-config'
 
 export const siteContent = {
   navbar: {
-    tagline: 'Visual library · images & profiles',
+    tagline: '',
     /** Shown prominently in the main nav; other tasks stay reachable via footer & “More”. */
     emphasizeTaskKeys: ['image', 'profile'] as const satisfies readonly TaskKey[],
     secondaryNavLinks: [
@@ -16,7 +16,7 @@ export const siteContent = {
   hero: {
     badge: 'Visual network',
     title: [
-      'A gallery-first home for images and the people behind them.',
+      'A curated space where creativity and exploration come together.',
       'Large tiles, calm metadata, and profile cards that feel intentional—not like a recycled feed.',
     ],
     description:

@@ -114,17 +114,6 @@ export default function ContactPage() {
               Tell us what you are trying to publish, fix, or launch. We will steer your note to the right lane with the same
               warm layout and primary accent as the home page.
             </p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <a
-                href={mailtoHref}
-                className={`inline-flex h-11 items-center justify-center rounded-full px-5 text-sm font-semibold ${tone.action}`}
-              >
-                Email us directly
-              </a>
-              <span className="inline-flex h-11 items-center rounded-full border border-border bg-white/85 px-5 text-sm text-foreground shadow-sm">
-                {contactEmail}
-              </span>
-            </div>
             <div className="mt-8 grid gap-4 sm:grid-cols-3">
               {['Fast first response', 'Clear next steps', 'Product-aware routing'].map((label) => (
                 <div
